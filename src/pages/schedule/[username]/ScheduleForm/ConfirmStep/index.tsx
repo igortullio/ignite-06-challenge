@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Text, TextArea, TextInput } from '@igortullio-ui/react'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/router'
 import { CalendarBlank, Clock } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { api } from '../../../../../lib/axios'
 import { ConfirmForm, FormActions, FormError, FormHeader } from './styles'
 
 const confirmFormSchema = z.object({
@@ -16,10 +18,10 @@ type ConfirmFormData = z.infer<typeof confirmFormSchema>
 
 interface ConfirmStepProps {
   schedulingDate: Date
-  onCancel: () => void
+  onClearDate: () => void
 }
 
-export function ConfirmStep({ schedulingDate, onCancel }: ConfirmStepProps) {
+export function ConfirmStep({ schedulingDate, onClearDate }: ConfirmStepProps) {
   const {
     register,
     handleSubmit,
@@ -27,8 +29,22 @@ export function ConfirmStep({ schedulingDate, onCancel }: ConfirmStepProps) {
   } = useForm<ConfirmFormData>({
     resolver: zodResolver(confirmFormSchema),
   })
+  const router = useRouter()
 
-  function handleConfirmScheduling(data: ConfirmFormData) {}
+  const username = String(router.query.username)
+
+  async function handleConfirmScheduling(data: ConfirmFormData) {
+    const { name, email, observations } = data
+
+    await api.post(`/users/${username}/schedule`, {
+      name,
+      email,
+      observations,
+      date: schedulingDate,
+    })
+
+    await onClearDate()
+  }
 
   const formatedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
   const formatedTime = dayjs(schedulingDate).format('HH:mm[h]')
@@ -66,7 +82,7 @@ export function ConfirmStep({ schedulingDate, onCancel }: ConfirmStepProps) {
       </label>
 
       <FormActions>
-        <Button type="button" variant="tertiary" onClick={onCancel}>
+        <Button type="button" variant="tertiary" onClick={onClearDate}>
           Cancelar
         </Button>
         <Button type="submit" disabled={isSubmitting}>
