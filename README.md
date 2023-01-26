@@ -1,6 +1,6 @@
 # Rocketseat Ignite - Challenge 06
 
-## [Open site]()
+## [Open site](https://ignite-call-igortullio.vercel.app/)
 
 ## [Design](https://www.figma.com/file/lifQUtUq4rczj4hUmYWtMc/Ignite-Call?t=OrxkVZePeafA2Nbj-0)
 
